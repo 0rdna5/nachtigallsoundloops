@@ -1,0 +1,101 @@
+type1:
+  name: "Der Lustige"
+  colors:
+    primary: "#c19a24"
+    secondary: "#2f3d16"
+    text: "#ffffff"
+  font: "Montserrat-Bold.ttf"
+  font_size: 72
+  outline:
+    width: 3
+    color: "#1a1a1a"
+  safe_margin: 120
+  video:
+    saturation: 1.1
+    contrast: 1.05
+    vignette: false
+
+type2:
+  name: "Der Ernste"
+  colors:
+    primary: "#6b1b2a"
+    secondary: "#0f2847"
+    text: "#f5f0e6"
+  font: "CrimsonPro-SemiBold.ttf"
+  font_size: 68
+  outline:
+    width: 2
+    color: "#1f1f1f"
+  safe_margin: 120
+  video:
+    saturation: 0.95
+    contrast: 1.0
+    vignette: true
+
+type3:
+  name: "Der Makabere"
+  colors:
+    primary: "#53565a"
+    secondary: "#1c1c1c"
+    text: "#e0e0e0"
+  font: "Montserrat-SemiBold.ttf"
+  font_size: 70
+  outline:
+    width: 4
+    color: "#000000"
+  safe_margin: 120
+  video:
+    saturation: 0.9
+    contrast: 1.1
+    vignette: true
+
+type4:
+  name: "Der geplagte Ehemann"
+  colors:
+    primary: "#c97f4c"
+    secondary: "#6a2e1f"
+    text: "#f7f1e1"
+  font: "Montserrat-Bold.ttf"
+  font_size: 70
+  outline:
+    width: 3
+    color: "#2d1b0f"
+  safe_margin: 120
+  video:
+    saturation: 1.05
+    contrast: 1.02
+    vignette: false
+
+type5:
+  name: "Der Sarkastische"
+  colors:
+    primary: "#7a7a7a"
+    secondary: "#3e3e3e"
+    text: "#ffffff"
+  font: "Montserrat-Medium.ttf"
+  font_size: 68
+  outline:
+    width: 2
+    color: "#1f1f1f"
+  safe_margin: 120
+  video:
+    saturation: 1.0
+    contrast: 1.05
+    vignette: false
+
+type6:
+  name: "Der Fromme"
+  colors:
+    primary: "#b8860b"
+    secondary: "#6b4a1e"
+    text: "#fef5e7"
+  font: "CrimsonPro-SemiBold.ttf"
+  font_size: 72
+  outline:
+    width: 3
+    color: "#3a240d"
+  safe_margin: 120
+  video:
+    saturation: 0.98
+    contrast: 1.08
+    vignette: true
