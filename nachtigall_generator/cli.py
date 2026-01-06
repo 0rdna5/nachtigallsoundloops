@@ -108,6 +108,7 @@ def generate(
             video_id = uploader.upload(
                 video_path,
                 metadata.platforms["youtube"].model_dump(),
+                allow=youtube_enabled,
             )
             if video_id:
                 typer.echo(f"Uploaded to YouTube with id: {video_id}")

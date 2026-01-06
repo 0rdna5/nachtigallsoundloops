@@ -44,7 +44,10 @@ out/
 ### Environment
 - `.env` (optional) für Einstellungen, Beispiel siehe `.env.example`.
 - Relevante Variablen (Prefix `NACHTIGALL_`): `ASSETS_DIR`, `CONFIG_DIR`, `OUTPUT_DIR`, `TREND_MODE`, `YOUTUBE_UPLOAD`, `YOUTUBE_CATEGORY_ID`.
-- YouTube Upload nur, wenn `YOUTUBE_UPLOAD=1` und Service-Account-Credentials (`youtube_credentials.json`) vorhanden sind.
+- YouTube Upload läuft, wenn **ein** der folgenden Flags gesetzt ist und `youtube_credentials.json` existiert:
+  - CLI-Flag `--youtube-upload`
+  - `NACHTIGALL_YOUTUBE_UPLOAD=1` (per ENV)
+  - `YOUTUBE_UPLOAD=1` (Legacy ENV)
 
 ## Nutzung
 Generiere das Paket für heute:

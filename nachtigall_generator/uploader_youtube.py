@@ -20,12 +20,28 @@ class YouTubeUploader:
         self.credentials_file = credentials_file or Path("youtube_credentials.json")
         self.category_id = category_id
 
-    def is_enabled(self) -> bool:
-        return bool(os.getenv("YOUTUBE_UPLOAD") == "1" and self.credentials_file.exists())
+    def is_enabled(self, allow: Optional[bool] = None) -> bool:
+        """
+        Decide if uploads should run.
 
-    def upload(self, video_path: Path, metadata: dict) -> Optional[str]:
-        if not self.is_enabled():
+        - If ``allow`` is provided (CLI flag / config), honor it together with the
+          credentials file check.
+        - Otherwise fall back to environment variables ``YOUTUBE_UPLOAD`` or
+          ``NACHTIGALL_YOUTUBE_UPLOAD``.
+        """
+
+        flag = allow
+        if flag is None:
+            env_flag = os.getenv("YOUTUBE_UPLOAD") or os.getenv("NACHTIGALL_YOUTUBE_UPLOAD")
+            flag = env_flag == "1"
+
+        return bool(flag and self.credentials_file.exists())
+
+    def upload(self, video_path: Path, metadata: dict, allow: Optional[bool] = None) -> Optional[str]:
+        if not self.is_enabled(allow=allow):
             return None
+        if not self.credentials_file.exists():
+            raise RuntimeError(f"YouTube credentials missing: {self.credentials_file}")
         if build is None or MediaFileUpload is None or Credentials is None:
             raise RuntimeError("google-api-python-client not installed; install with 'pip install .[youtube]'")
 
