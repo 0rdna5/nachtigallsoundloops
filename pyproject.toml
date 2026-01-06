@@ -1,0 +1,24 @@
+[project]
+name = "nachtigall_generator"
+version = "0.1.0"
+description = "Automated short content generator for Zahnlose Nachtigall"
+authors = [{ name = "Zahnlose Nachtigall Team" }]
+requires-python = ">=3.11"
+dependencies = [
+  "typer>=0.9",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "pillow>=10.0",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.3"]
+youtube = ["google-api-python-client>=2.132.0"]
+
+[project.scripts]
+nachtigall = "nachtigall_generator.cli:app"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
