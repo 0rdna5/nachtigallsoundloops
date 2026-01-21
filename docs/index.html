@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nachtigall Studio – Social Video Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Zahnlose Nachtigall</p>
+        <h1>Social Video Studio</h1>
+        <p class="subtitle">
+          Stelle Video- & Audio-Assets sowie aktuelle Anlässe zusammen und generiere ein fertiges Social-Video-Paket.
+        </p>
+      </div>
+      <div class="header-actions">
+        <div class="status-pill" id="generationStatus">Bereit</div>
+        <button id="generateButton" class="primary">Paket generieren</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel summary-panel">
+        <h2>Zusammenfassung</h2>
+        <p class="helper">Dein aktuelles Setup wird hier live gespiegelt.</p>
+        <div class="summary-list">
+          <div>
+            <span class="summary-label">Video</span>
+            <strong id="summaryVideo">–</strong>
+          </div>
+          <div>
+            <span class="summary-label">Audio</span>
+            <strong id="summaryAudio">–</strong>
+          </div>
+          <div>
+            <span class="summary-label">Anlass</span>
+            <strong id="summaryOccasion">–</strong>
+          </div>
+          <div>
+            <span class="summary-label">Letzte Generierung</span>
+            <strong id="lastGenerated">–</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Video-Assets</h2>
+        <p class="helper">Wähle ein Template, das zu deinem Format passt.</p>
+        <div id="videoAssetList" class="card-grid"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Audio-Assets</h2>
+        <p class="helper">Soundloops für die Stimmung deines Clips.</p>
+        <div id="audioAssetList" class="card-grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Anlasskalender Österreich</h2>
+            <p class="helper">Aktuelle Ereignisse werden für die Text-Generierung priorisiert.</p>
+          </div>
+          <div class="date-control">
+            <label for="referenceDate">Datum</label>
+            <input type="date" id="referenceDate" />
+          </div>
+        </div>
+        <div id="occasionList" class="list"></div>
+      </section>
+
+      <section class="panel span-2">
+        <h2>Ausgabe</h2>
+        <p class="helper">Generierte Texte können direkt kopiert, bearbeitet oder neu erstellt werden.</p>
+        <div id="outputs" class="output-grid"></div>
+      </section>
+
+      <section class="panel span-2">
+        <h2>Video Download</h2>
+        <div class="video-preview">
+          <canvas id="previewCanvas" width="540" height="960"></canvas>
+          <div class="video-actions">
+            <button id="downloadVideo" class="primary">Video herunterladen</button>
+            <p id="downloadHint" class="helper">Video wird als Platzhalter-WebM generiert.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Dieser Prototyp läuft vollständig clientseitig und eignet sich für GitHub Pages.</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
