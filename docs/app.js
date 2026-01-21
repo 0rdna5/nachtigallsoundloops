@@ -7,11 +7,84 @@ const videoAssets = [
   { id: "type6", name: "Type 6 – Story Beats", duration: "25s" }
 ];
 
+const contentTypes = [
+  {
+    id: "type1",
+    name: "Der Lustige",
+    label: "Klassische Gstanzl, Witze",
+    mood: "Gesellig, laut, Stammtisch-Vibe.",
+    palette: "Tannengrün & Goldgelb",
+    background: "Unscharfer Heurigen-Innenraum, volle Gläser.",
+    mimic: "Herzhaftes Lachen, fingerzeigend („Du verstehst mi!“).",
+    thumbnailExamples: ["SO A DEPP!", "TRINK MA NO?", "FRAUEN & WEIN"],
+    seoKeywords: ["Gstanzl", "Witze", "Heuriger", "Stammtisch", "österreichischer Schmäh"]
+  },
+  {
+    id: "type2",
+    name: "Der Ernste",
+    label: "Balladen, Nachdenkliches",
+    mood: "Melancholisch, tiefgründig, respektvoll.",
+    palette: "Dunkles Weinrot oder Dunkelblau",
+    background: "Abenddämmerung, Burgenland-Landschaft, Kerze.",
+    mimic: "Ruhiger Blick, kein Lächeln.",
+    thumbnailExamples: ["Für Annemarie", "Heimat im Herzen", "Abschied"],
+    seoKeywords: ["Ballade", "Heimat", "Burgenland", "Tradition", "österreichische Musik"]
+  },
+  {
+    id: "type3",
+    name: "Der Makabere",
+    label: "Schwarzer Humor, Tod, Erbe",
+    mood: "Trocken, böse, Wiener Schmäh.",
+    palette: "Schiefergrau, entsättigte Farben",
+    background: "Friedhofsmauer, Nebel, alte Holzhütte.",
+    mimic: "Pokerface, starrer Blick.",
+    thumbnailExamples: ["ERBE SICHERN", "SCHADENFREUDE", "LEIDER NEIN"],
+    seoKeywords: ["schwarzer Humor", "Wiener Schmäh", "makaber", "Erbe", "Satire"]
+  },
+  {
+    id: "type4",
+    name: "Der geplagte Ehemann",
+    label: "Beziehungsprobleme",
+    mood: "Genervt, resigniert, solidarisch.",
+    palette: "Sepia & Warmweiß mit Signalrot",
+    background: "Küchentisch, Wohnzimmer, Silhouette im Hintergrund.",
+    mimic: "Augen verdrehen, Hand an der Stirn.",
+    thumbnailExamples: ["SCHON WIEDER!", "SIE REDET NOCH...", "JA SCHATZ..."],
+    seoKeywords: ["Ehemann", "Beziehungsalltag", "Stammtisch", "Humor 50+", "österreich"]
+  },
+  {
+    id: "type5",
+    name: "Der Sarkastische",
+    label: "Gesellschaftskritik, Ironie",
+    mood: "Überlegen, wissend, spitzzüngig.",
+    palette: "Neutral, Steinwand-Look",
+    background: "Schlichte Wand, Fokus auf Gesicht.",
+    mimic: "Schiefes Grinsen, skeptischer Blick.",
+    thumbnailExamples: ["ECHT JETZT?", "GLAUBST DU DAS?", "ALLES LÜGE?"],
+    seoKeywords: ["Sarkasmus", "Gesellschaftskritik", "Ironie", "Österreich", "Wien"]
+  },
+  {
+    id: "type6",
+    name: "Der Fromme",
+    label: "Kirche, Weihnachten, Tradition",
+    mood: "Warm, glänzend, friedlich.",
+    palette: "Goldtöne & Dunkelbraun",
+    background: "Kirchenfenster, Kerzenschein, Weihnachtsbaum.",
+    mimic: "Gütiges Lächeln, gefaltete Hände.",
+    thumbnailExamples: ["Stille Nacht", "Gesegnetes Fest", "Dankbarkeit"],
+    seoKeywords: ["Kirche", "Weihnachten", "Tradition", "christlich", "österreich"]
+  }
+];
+
 const audioAssets = [
-  { id: "loop1", name: "Soundloop Aurora", mood: "uplifting" },
-  { id: "loop2", name: "Soundloop Vienna Nights", mood: "moody" },
-  { id: "loop3", name: "Soundloop Alpine Rise", mood: "cinematic" },
-  { id: "loop4", name: "Soundloop City Pulse", mood: "energetic" }
+  { id: "loop1", name: "Schnaderhuepfl", mood: "gesellig" },
+  { id: "loop1b", name: "Schnaderhuepfl (Type 5)", mood: "gesellig" },
+  { id: "loop2", name: "STritschiwutscherl", mood: "klassisch" },
+  { id: "loop3", name: "Trink ma no a Flascherl hook", mood: "heuriger vibe" },
+  { id: "loop4", name: "Andauer Weinlied (fröhlich)", mood: "gemütlich" },
+  { id: "loop5", name: "Und da Ochs hot glocht", mood: "volksnah" },
+  { id: "loop6", name: "Heit is mei Oidi gstorm", mood: "ballade" },
+  { id: "loop6b", name: "Heit is mei Oidi gstorm (Type 6)", mood: "ballade" }
 ];
 
 const outputConfigs = [
@@ -25,12 +98,14 @@ const outputConfigs = [
 ];
 
 const state = {
+  selectedContentType: contentTypes[0],
   selectedVideo: videoAssets[0],
   selectedAudio: audioAssets[0],
   selectedOccasion: null,
   occasions: []
 };
 
+const contentTypeList = document.getElementById("contentTypeList");
 const videoAssetList = document.getElementById("videoAssetList");
 const audioAssetList = document.getElementById("audioAssetList");
 const occasionList = document.getElementById("occasionList");
@@ -62,6 +137,41 @@ const buildAssetCards = (list, items, selectedKey, onSelect) => {
     `;
     card.addEventListener("click", () => onSelect(item));
     list.appendChild(card);
+  });
+};
+
+const buildContentCards = () => {
+  contentTypeList.innerHTML = "";
+  contentTypes.forEach((type) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "content-card";
+    if (type.id === state.selectedContentType.id) {
+      card.classList.add("active");
+    }
+    card.innerHTML = `
+      <header>
+        <div>
+          <strong>${type.name}</strong>
+          <span class="helper">${type.label}</span>
+        </div>
+        <span class="tag">${type.palette}</span>
+      </header>
+      <ul>
+        <li><strong>Stimmung:</strong> ${type.mood}</li>
+        <li><strong>Hintergrund:</strong> ${type.background}</li>
+        <li><strong>Mimik:</strong> ${type.mimic}</li>
+      </ul>
+      <div class="thumbnail-examples">
+        ${type.thumbnailExamples.map((example) => `<span>${example}</span>`).join("")}
+      </div>
+    `;
+    card.addEventListener("click", () => {
+      state.selectedContentType = type;
+      buildContentCards();
+      handleGenerate();
+    });
+    contentTypeList.appendChild(card);
   });
 };
 
@@ -121,48 +231,182 @@ const renderOccasions = () => {
   });
 };
 
+const slugifyTag = (value) => value.replace(/[^\p{L}\p{N}]+/gu, "");
+
 const generateTextPackage = () => {
   const occasion = state.selectedOccasion?.name || "dein nächster Anlass";
   const dateKey = state.selectedOccasion?.date || normalizeDateKey(referenceDate.value);
-  const overlayVariants = [
-    `Heute in Österreich: ${occasion} ✨`,
-    `Bereit für ${occasion}? Jetzt reinschauen!`,
-    `${occasion} – die Highlights im 30-Sekunden-Recap.`
-  ];
-  const titleVariants = [
-    `${occasion} in 30 Sekunden | Schnell erklärt`,
-    `Top-Highlights zu ${occasion} (AT)`,
-    `${occasion}: 3 Dinge, die du heute wissen solltest`
-  ];
-  const descriptionVariants = [
-    `Wir feiern ${occasion} mit schnellen Eindrücken, passenden Clips und dem passenden Soundloop.\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}`,
-    `Alles Wichtige zu ${occasion} in einem kurzen Video zusammengefasst. Ideal zum Teilen und Speichern.\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}`
-  ];
+  const contentType = state.selectedContentType;
+  const audienceLine = "Für Männer 50+ aus Österreich – direkt, ehrlich und mit Schmäh.";
+  const seoKeywords = [occasion, ...contentType.seoKeywords, "Österreich", "Gstanzl"].join(", ");
+
+  const copyByType = {
+    type1: {
+      overlay: [
+        `Stammtisch-Schmäh zu ${occasion} – da lacht da ganze Tisch!`,
+        `Gstanzl & Witze: ${occasion} auf gutem Wiener Schmäh.`,
+        `Laut, ehrlich, leiwand: ${occasion} mit Humor.`
+      ],
+      title: [
+        `${occasion} | Gstanzl & Witze für den Stammtisch (Österreich)`,
+        `Wiener Schmäh zu ${occasion} – lustige Gstanzl für Männer 50+`,
+        `${occasion} mit Humor: Heurigen-Witz & Schmäh`
+      ],
+      description: [
+        `Ein geselliger Schmäh zu ${occasion}, mit Gstanzl, Witz und Heurigen-Flair. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
+        `Stammtisch-Vibe pur: ${occasion} als kurzer, knackiger Schmäh. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+      ],
+      instagram: [
+        `${occasion} mit a bisserl Schmäh. 🍻\nWas war dein bester Witz dazu?\n\n#${slugifyTag(occasion)} #heuriger #gstanzl #österreich`,
+        `Lachen erlaubt: ${occasion} im Stammtisch-Ton. Schreib uns deinen Spruch!`
+      ],
+      pinned: [
+        `Was war dein bester Wirtshaus-Schmäh zu ${occasion}?`,
+        `Welcher Satz passt zu ${occasion} am Stammtisch?`
+      ],
+      thumbnail: contentType.thumbnailExamples
+    },
+    type2: {
+      overlay: [
+        `Eine leise Ballade zu ${occasion}.`,
+        `Heimat im Herzen: ${occasion} in stillen Worten.`,
+        `${occasion} – nachdenklich und ehrlich.`
+      ],
+      title: [
+        `${occasion} – Ballade & Heimatgefühl (Österreich)`,
+        `Nachdenklich zu ${occasion} | Musik & Worte aus Österreich`,
+        `Heimat im Herzen: ${occasion} als stille Ballade`
+      ],
+      description: [
+        `Ein ruhiger, respektvoller Blick auf ${occasion}. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
+        `Melancholische Stimmung und ehrliche Worte zu ${occasion}. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+      ],
+      instagram: [
+        `${occasion} in leisen Zeilen. 🌙\nWelche Erinnerung verbindest du damit?\n\n#${slugifyTag(occasion)} #heimat #österreich`,
+        `Ruhige Töne zu ${occasion}. Schreib deine Gedanken darunter.`
+      ],
+      pinned: [
+        `Welche Erinnerung zu ${occasion} trägst du im Herzen?`,
+        `Was bedeutet ${occasion} für dich persönlich?`
+      ],
+      thumbnail: contentType.thumbnailExamples
+    },
+    type3: {
+      overlay: [
+        `${occasion} – schwarzer Humor mit Wiener Schmäh.`,
+        `Makaber, trocken, ehrlich: ${occasion}.`,
+        `Wiener Schmäh trifft ${occasion}.`
+      ],
+      title: [
+        `${occasion} | Schwarzer Humor mit Wiener Schmäh`,
+        `Makaber & direkt: ${occasion} aus Österreich`,
+        `Schadenfreude? ${occasion} mit trockenem Schmäh`
+      ],
+      description: [
+        `Schwarzer Humor, trocken serviert: ${occasion} mit Wiener Schmäh. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
+        `Makaber und pointiert: ${occasion} als kurze Satire aus Österreich. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+      ],
+      instagram: [
+        `${occasion} mit schwarzem Humor. 😈\nVerstehst den Schmäh?\n\n#${slugifyTag(occasion)} #wienerschmäh #satire`,
+        `Trocken, böse, ehrlich: ${occasion} im Wiener Ton.`
+      ],
+      pinned: [
+        `Darf man darüber lachen? Schreib dein Urteil zu ${occasion}.`,
+        `Welcher schwarze Schmäh passt zu ${occasion}?`
+      ],
+      thumbnail: contentType.thumbnailExamples
+    },
+    type4: {
+      overlay: [
+        `${occasion} – und daheim redt sie wieder.`,
+        `Ehemann-Schmäh zu ${occasion}: Ja Schatz...`,
+        `${occasion} aus Sicht vom geplagten Mann.`
+      ],
+      title: [
+        `${occasion} | Beziehungs-Schmäh für Männer 50+`,
+        `Ja Schatz... ${occasion} im Ehemann-Style (Österreich)`,
+        `Beziehungsalltag & Schmäh: ${occasion}`
+      ],
+      description: [
+        `Genervt, aber mit Humor: ${occasion} aus Sicht vom geplagten Ehemann. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
+        `Ein solidarischer Blick auf den Beziehungsalltag: ${occasion} mit Augenzwinkern. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+      ],
+      instagram: [
+        `${occasion} – und daheim is wieder Theater. 😅\nWer kennt's?\n\n#${slugifyTag(occasion)} #ehemann #beziehung`,
+        `Ehemann-Schmäh zu ${occasion}. Männer 50+ fühlen mit.`
+      ],
+      pinned: [
+        `Welche „Ja Schatz“-Situation passt zu ${occasion}?`,
+        `Erzähl deinen besten Ehemann-Schmäh zu ${occasion}.`
+      ],
+      thumbnail: contentType.thumbnailExamples
+    },
+    type5: {
+      overlay: [
+        `${occasion} – echt jetzt?`,
+        `Ironischer Blick auf ${occasion}.`,
+        `${occasion} mit scharfem Kommentar.`
+      ],
+      title: [
+        `${occasion} | Sarkasmus & Gesellschaftskritik aus Österreich`,
+        `Echt jetzt? ${occasion} ironisch kommentiert`,
+        `${occasion} – kritisch, pointiert, österreichisch`
+      ],
+      description: [
+        `Sarkastisch, wissend und pointiert: ${occasion} mit gesellschaftlichem Unterton. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
+        `Ironie mit Schmäh: ${occasion} kritisch auf den Punkt gebracht. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+      ],
+      instagram: [
+        `${occasion} – glaubst du das? 🤨\nDeine Meinung zählt.\n\n#${slugifyTag(occasion)} #sarkasmus #kritik`,
+        `Sarkastischer Blick auf ${occasion}. Schreib deinen Kommentar.`
+      ],
+      pinned: [
+        `Welcher sarkastische Satz passt zu ${occasion}?`,
+        `Was ist dein kritischster Gedanke zu ${occasion}?`
+      ],
+      thumbnail: contentType.thumbnailExamples
+    },
+    type6: {
+      overlay: [
+        `${occasion} – mit Dankbarkeit im Herzen.`,
+        `Tradition & Frieden zu ${occasion}.`,
+        `Gesegnete Worte zu ${occasion}.`
+      ],
+      title: [
+        `${occasion} | Tradition, Glaube & Dankbarkeit (Österreich)`,
+        `Gesegnete Worte zu ${occasion} – ruhig & herzlich`,
+        `${occasion} in christlicher Tradition`
+      ],
+      description: [
+        `Warme, friedliche Worte zu ${occasion}. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
+        `Tradition und Dankbarkeit: ${occasion} mit ruhigem Ton. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+      ],
+      instagram: [
+        `${occasion} mit Dankbarkeit und Frieden. ✨\nEin gesegnetes Fest!\n\n#${slugifyTag(occasion)} #tradition #kirche`,
+        `Ruhige Worte zu ${occasion}. Teilen & weitergeben.`
+      ],
+      pinned: [
+        `Wofür bist du rund um ${occasion} dankbar?`,
+        `Welche Tradition zu ${occasion} ist dir wichtig?`
+      ],
+      thumbnail: contentType.thumbnailExamples
+    }
+  };
+
+  const variants = copyByType[contentType.id];
   const tagVariants = [
-    `#${occasion.replace(/\s+/g, "")} #österreich #shorts #nachtigall`,
-    `#${occasion.replace(/\s+/g, "")} #austria #reels #shortvideo #trend`
-  ];
-  const instaVariants = [
-    `Heute ist ${occasion}! 🎉\nWas verbindest du damit? Schreib's in die Kommentare.\n\n#${occasion.replace(/\s+/g, "")} #austria #reels`,
-    `${occasion} steht vor der Tür – hier sind die besten Clips in 30 Sekunden. \nMarkiere jemanden, der das sehen muss!`
-  ];
-  const pinnedVariants = [
-    `Welches Detail zu ${occasion} hat dich am meisten überrascht?`,
-    `Schreib uns dein persönliches Highlight zu ${occasion} unten rein!`
-  ];
-  const thumbnailVariants = [
-    `${occasion} Heute!`,
-    `${occasion} Highlights`
+    `#${slugifyTag(occasion)} #österreich #austria #shorts #nachtigall`,
+    `#${slugifyTag(occasion)} #reels #heimat #wienerschmäh #österreich`
   ];
 
   return {
-    overlay: pickRandom(overlayVariants),
-    youtubeTitle: pickRandom(titleVariants),
-    youtubeDescription: pickRandom(descriptionVariants),
+    overlay: pickRandom(variants.overlay),
+    youtubeTitle: pickRandom(variants.title),
+    youtubeDescription: pickRandom(variants.description),
     youtubeTags: pickRandom(tagVariants),
-    instagramCaption: pickRandom(instaVariants),
-    pinnedComment: pickRandom(pinnedVariants),
-    thumbnailText: pickRandom(thumbnailVariants)
+    instagramCaption: pickRandom(variants.instagram),
+    pinnedComment: pickRandom(variants.pinned),
+    thumbnailText: pickRandom(variants.thumbnail)
   };
 };
 
@@ -237,18 +481,19 @@ const drawPreview = (texts = null) => {
   ctx.font = "18px Inter, sans-serif";
   ctx.fillText(`Template: ${state.selectedVideo.name}`, 60, 150);
   ctx.fillText(`Audio: ${state.selectedAudio.name}`, 60, 175);
+  ctx.fillText(`Content-Typ: ${state.selectedContentType.name}`, 60, 200);
 
   const overlayText = texts?.overlay || generateTextPackage().overlay;
-  wrapText(ctx, overlayText, 60, 260, 420, 28);
+  wrapText(ctx, overlayText, 60, 280, 420, 28);
 
   if (state.selectedOccasion) {
     ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
-    ctx.fillRect(40, 780, 460, 120);
+    ctx.fillRect(40, 760, 460, 140);
     ctx.fillStyle = "#ffffff";
     ctx.font = "bold 22px Inter, sans-serif";
-    ctx.fillText(state.selectedOccasion.name, 60, 830);
+    ctx.fillText(state.selectedOccasion.name, 60, 810);
     ctx.font = "16px Inter, sans-serif";
-    ctx.fillText(`Anlass: ${state.selectedOccasion.date}`, 60, 860);
+    ctx.fillText(`Anlass: ${state.selectedOccasion.date}`, 60, 840);
   }
 };
 
@@ -335,6 +580,7 @@ const init = async () => {
   state.occasions = data.occasions;
   state.selectedOccasion = state.occasions[0];
 
+  buildContentCards();
   buildAssetCards(videoAssetList, videoAssets, state.selectedVideo.id, selectVideo);
 
   buildAssetCards(audioAssetList, audioAssets, state.selectedAudio.id, selectAudio);

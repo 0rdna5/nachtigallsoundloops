@@ -12,13 +12,23 @@
         <p class="eyebrow">Zahnlose Nachtigall</p>
         <h1>Social Video Studio</h1>
         <p class="subtitle">
-          Stelle Video- & Audio-Assets sowie aktuelle Anlässe zusammen und generiere ein fertiges Social-Video-Paket.
+          Stelle Video- & Audio-Assets, Content-Typen und aktuelle Anlässe zusammen und generiere ein fertiges Social-Video-Paket.
         </p>
+        <p class="helper">Zielgruppe: Männer 50+ aus Österreich mit Fokus auf authentischen, suchoptimierten Content.</p>
       </div>
       <button id="generateButton" class="primary">Paket generieren</button>
     </header>
 
     <main class="grid">
+      <section class="panel">
+        <h2>Content-Typen</h2>
+        <p class="helper">
+          Wähle den Stil, der am besten zu deiner Zielgruppe passt. Jeder Typ enthält Hinweise zu Stimmung, Bildsprache
+          und Thumbnail-Ton.
+        </p>
+        <div id="contentTypeList" class="content-grid"></div>
+      </section>
+
       <section class="panel">
         <h2>Video-Assets</h2>
         <p class="helper">Wähle ein Template, das zu deinem Format passt.</p>
@@ -27,7 +37,9 @@
 
       <section class="panel">
         <h2>Audio-Assets</h2>
-        <p class="helper">Soundloops für die Stimmung deines Clips.</p>
+        <p class="helper">
+          Soundloops für die Stimmung deines Clips. Alle Loops sind frei kombinierbar und unabhängig vom Content-Typ.
+        </p>
         <div id="audioAssetList" class="card-grid"></div>
       </section>
 

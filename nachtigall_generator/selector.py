@@ -27,8 +27,8 @@ class AssetSelector:
     def pick_video_template(self, content_type: ContentType) -> Path:
         return self._pick_from_dir(self.assets_root / "video_templates" / content_type.value)
 
-    def pick_audio_loop(self, content_type: ContentType) -> Path:
-        return self._pick_from_dir(self.assets_root / "audio_loops" / content_type.value)
+    def pick_audio_loop(self) -> Path:
+        return self._pick_from_dir(self.assets_root / "audio_loops")
 
     def pick_font(self, font_name: str) -> Path:
         font_path = self.assets_root / "fonts" / font_name

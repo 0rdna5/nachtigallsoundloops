@@ -5,7 +5,7 @@ Automatisierter Generator für tägliche Kurzvideos (9:16) inklusive Overlays, S
 ## Features
 - Content-Typen 1–6 mit Style-Konfiguration in `config/styles.yaml`.
 - Anlasskalender Österreich in `config/occasions_at.json` zur Textanreicherung.
-- Asset-Auswahl (Video-Template, Audio-Loop, Schrift) pro Typ.
+- Asset-Auswahl: Video-Templates pro Typ, Audio-Loops global, Schrift.
 - Overlay-Renderer mit Safe-Margins (≥120px), Outline und Farbthemen.
 - ffmpeg-Pipeline: Scale/Crop auf 1080x1920, optional Vignette, Fade in/out (200ms), Audio-Loop, MP4 Export.
 - Metadaten-Generator pro Plattform (YouTube, Instagram, TikTok) inkl. CTA, Hashtags, Kommentar-Trigger.
@@ -16,7 +16,7 @@ Automatisierter Generator für tägliche Kurzvideos (9:16) inklusive Overlays, S
 ```
 assets/
   video_templates/type1..type6/.gitkeep
-  audio_loops/type1..type6/.gitkeep
+  audio_loops/*.mp3
   fonts/.gitkeep
   brand/.gitkeep
 config/
@@ -39,7 +39,7 @@ out/
    pip install -e .[youtube]
    ```
 3. ffmpeg/ffprobe in PATH verfügbar machen.
-4. Assets in die jeweiligen Ordner legen (Templates 9:16 oder croppbar, Audio-Loops, Fonts wie in `config/styles.yaml`).
+4. Assets in die jeweiligen Ordner legen (Templates 9:16 oder croppbar, Audio-Loops global, Fonts wie in `config/styles.yaml`).
 
 ### Environment
 - `.env` (optional) für Einstellungen, Beispiel siehe `.env.example`.
