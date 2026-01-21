@@ -60,7 +60,7 @@ def generate(
     selector = AssetSelector(settings.assets_dir)
     try:
         template_video = selector.pick_video_template(resolved_type)
-        audio_loop = selector.pick_audio_loop(resolved_type)
+        audio_loop = selector.pick_audio_loop()
         font_path = selector.pick_font(style.font)
     except AssetNotFound as exc:
         typer.echo(f"Asset missing: {exc}")
