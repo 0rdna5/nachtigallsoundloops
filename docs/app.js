@@ -345,5 +345,6 @@ const init = async () => {
 };
 
 referenceDate.addEventListener("change", renderOccasions);
+generateButton.addEventListener("click", handleGenerate);
 
 init();
