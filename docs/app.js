@@ -209,6 +209,14 @@ const renderOccasions = () => {
   const list = filterOccasions(dateKey);
   occasionList.innerHTML = "";
 
+  if (!list.length) {
+    const emptyState = document.createElement("div");
+    emptyState.className = "helper";
+    emptyState.textContent = "Keine Anlässe geladen. Bitte später erneut versuchen.";
+    occasionList.appendChild(emptyState);
+    return;
+  }
+
   list.forEach((occasion) => {
     const item = document.createElement("div");
     item.className = "occasion-item";
@@ -591,8 +599,23 @@ const init = async () => {
 
   buildAssetCards(audioAssetList, audioAssets, state.selectedAudio.id, selectAudio);
 
+  try {
+    const response = await fetch("data/occasions_at.json");
+    if (!response.ok) {
+      throw new Error(`Failed to load occasions: ${response.status}`);
+    }
+    const data = await response.json();
+    state.occasions = data.occasions;
+    state.selectedOccasion = state.occasions[0];
+  } catch (error) {
+    console.warn(error);
+    state.occasions = [];
+    state.selectedOccasion = null;
+  }
+
   renderOccasions();
-  handleGenerate();
+  drawPreview();
+  setActiveTab("input");
   setupDownload();
 };
 
