@@ -24,8 +24,8 @@ class AssetSelector:
             raise AssetNotFound(f"No assets found in {directory}")
         return self.rng.choice(candidates)
 
-    def pick_video_template(self) -> Path:
-        return self._pick_from_dir(self.assets_root / "video_templates")
+    def pick_video_template(self, content_type: ContentType) -> Path:
+        return self._pick_from_dir(self.assets_root / "video_templates" / content_type.value)
 
     def pick_audio_loop(self) -> Path:
         return self._pick_from_dir(self.assets_root / "audio_loops")

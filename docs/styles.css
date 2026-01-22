@@ -32,12 +32,6 @@ body {
   margin-bottom: 32px;
 }
 
-.header-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
 .eyebrow {
   font-size: 0.75rem;
   letter-spacing: 0.2em;
@@ -71,39 +65,6 @@ h1 {
 .primary:disabled {
   background: #98a3ff;
   cursor: not-allowed;
-}
-
-.secondary {
-  background: white;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 12px;
-  padding: 12px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.tab-button {
-  border: 1px solid var(--border);
-  background: white;
-  border-radius: 999px;
-  padding: 10px 18px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.tab-button.active {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-
-.tab-panel {
-  display: none;
-}
-
-.tab-panel.active {
-  display: block;
 }
 
 .grid {
