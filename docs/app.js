@@ -111,15 +111,10 @@ const audioAssetList = document.getElementById("audioAssetList");
 const occasionList = document.getElementById("occasionList");
 const outputs = document.getElementById("outputs");
 const generateButton = document.getElementById("generateButton");
-const regenerateVideoButton = document.getElementById("regenerateVideo");
 const referenceDate = document.getElementById("referenceDate");
 const downloadVideoButton = document.getElementById("downloadVideo");
 const downloadHint = document.getElementById("downloadHint");
 const previewCanvas = document.getElementById("previewCanvas");
-const tabInput = document.getElementById("tabInput");
-const tabOutput = document.getElementById("tabOutput");
-const inputTab = document.getElementById("inputTab");
-const outputTab = document.getElementById("outputTab");
 
 const today = new Date();
 referenceDate.value = today.toISOString().split("T")[0];
@@ -523,7 +518,6 @@ const handleGenerate = () => {
   const texts = generateTextPackage();
   renderOutputs(texts);
   drawPreview(texts);
-  setActiveTab("output");
 };
 
 const setupDownload = () => {
@@ -598,8 +592,5 @@ const init = async () => {
 
 referenceDate.addEventListener("change", renderOccasions);
 generateButton.addEventListener("click", handleGenerate);
-regenerateVideoButton.addEventListener("click", handleGenerate);
-tabInput.addEventListener("click", () => setActiveTab("input"));
-tabOutput.addEventListener("click", () => setActiveTab("output"));
 
 init();
