@@ -124,7 +124,7 @@ const buildAssetCards = (list, items, selectedKey, onSelect, emptyMessage = "Kei
   if (items.length === 0) {
     const emptyState = document.createElement("div");
     emptyState.className = "empty-state";
-    emptyState.textContent = emptyMessage;
+    emptyState.textContent = "Keine Video-Assets gefunden.";
     list.appendChild(emptyState);
     return;
   }
@@ -472,11 +472,38 @@ const renderOutputs = (texts) => {
   });
 };
 
-const assetBasePaths = ["assets/video_templates", "../assets/video_templates"];
+const drawPreview = (texts = null) => {
+  const ctx = previewCanvas.getContext("2d");
+  const gradient = ctx.createLinearGradient(0, 0, 540, 960);
+  gradient.addColorStop(0, "#3b5bff");
+  gradient.addColorStop(1, "#0f172a");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
 
-const buildAssetUrl = (basePath, fileName) => {
-  const encodedFile = encodeURIComponent(fileName);
-  return `${basePath}/${encodedFile}`;
+  ctx.fillStyle = "rgba(255, 255, 255, 0.16)";
+  ctx.fillRect(40, 60, 460, 140);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 28px Inter, sans-serif";
+  ctx.fillText("Nachtigall Studio", 60, 110);
+
+  ctx.font = "18px Inter, sans-serif";
+  ctx.fillText(`Template: ${state.selectedVideo?.name || "Unbekannt"}`, 60, 150);
+  ctx.fillText(`Audio: ${state.selectedAudio?.name || "Unbekannt"}`, 60, 175);
+  ctx.fillText(`Content-Typ: ${state.selectedContentType.name}`, 60, 200);
+
+  const overlayText = texts?.overlay || generateTextPackage().overlay;
+  wrapText(ctx, overlayText, 60, 280, 420, 28);
+
+  if (state.selectedOccasion) {
+    ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+    ctx.fillRect(40, 760, 460, 140);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 22px Inter, sans-serif";
+    ctx.fillText(state.selectedOccasion.name, 60, 810);
+    ctx.font = "16px Inter, sans-serif";
+    ctx.fillText(`Anlass: ${state.selectedOccasion.date}`, 60, 840);
+  }
 };
 
 const resolveVideoUrl = async (fileName) => {
@@ -517,6 +544,18 @@ const handleGenerate = () => {
   updateVideoPreview();
 };
 
+const getSupportedMimeType = () => {
+  const types = [
+    "video/webm;codecs=vp9,opus",
+    "video/webm;codecs=vp8,opus",
+    "video/webm"
+  ];
+  if (!window.MediaRecorder?.isTypeSupported) {
+    return "";
+  }
+  return types.find((type) => MediaRecorder.isTypeSupported(type)) || "";
+};
+
 const resetDownloadState = (message) => {
   downloadVideoButton.disabled = false;
   downloadVideoButton.textContent = "Video herunterladen";
@@ -525,15 +564,29 @@ const resetDownloadState = (message) => {
   }
 };
 
-const buildDownloadName = (video) => {
-  const rawName = video?.file || video?.name || "video";
-  const withoutExtension = rawName.replace(/\.[^/.]+$/, "");
-  const safe = withoutExtension
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/gi, "-")
-    .replace(/^-+|-+$/g, "");
-  return `nachtigall-${safe || "video"}.mp4`;
+const setupDownload = () => {
+  if (!window.MediaRecorder) {
+    downloadHint.textContent = "MediaRecorder wird in diesem Browser nicht unterstützt.";
+    downloadVideoButton.disabled = true;
+    return;
+  }
 };
+
+  downloadVideoButton.addEventListener("click", async () => {
+    downloadVideoButton.disabled = true;
+    downloadVideoButton.textContent = "Video wird erstellt…";
+
+    const stream = previewCanvas.captureStream(30);
+    const mimeType = getSupportedMimeType();
+    let recorder;
+    try {
+      recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    } catch (error) {
+      resetDownloadState("Video konnte nicht gestartet werden. Bitte anderen Browser testen.");
+      return;
+    }
+
+    const chunks = [];
 
 const downloadSelectedVideo = async () => {
   if (!state.selectedVideo) {
@@ -541,31 +594,35 @@ const downloadSelectedVideo = async () => {
     return;
   }
 
-  downloadVideoButton.disabled = true;
-  downloadVideoButton.textContent = "Video wird vorbereitet…";
+    recorder.addEventListener("stop", () => {
+      const blob = new Blob(chunks, { type: "video/webm" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "nachtigall-video.webm";
+      link.click();
+      URL.revokeObjectURL(url);
+      resetDownloadState("Video wurde als WebM exportiert.");
+    });
 
-  try {
-    const fileName = state.selectedVideo.file || state.selectedVideo.name;
-    const videoUrl = await resolveVideoUrl(fileName);
-    const response = await fetch(videoUrl);
-    if (!response.ok) {
-      throw new Error("Video download failed");
+    recorder.addEventListener("error", () => {
+      resetDownloadState("Video konnte nicht erstellt werden. Bitte erneut versuchen.");
+    });
+
+    try {
+      recorder.start();
+    } catch (error) {
+      resetDownloadState("Video konnte nicht gestartet werden. Bitte anderen Browser testen.");
+      return;
     }
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = buildDownloadName(state.selectedVideo);
-    link.click();
-    URL.revokeObjectURL(url);
-    resetDownloadState("Video wurde als MP4 heruntergeladen.");
-  } catch (error) {
-    resetDownloadState("Video konnte nicht geladen werden. Bitte erneut versuchen.");
-  }
-};
+    drawPreview();
 
-const setupDownload = () => {
-  downloadVideoButton.addEventListener("click", downloadSelectedVideo);
+    setTimeout(() => {
+      if (recorder.state !== "inactive") {
+        recorder.stop();
+      }
+    }, 3000);
+  });
 };
 
 const selectVideo = (item) => {
@@ -596,6 +653,11 @@ const init = async () => {
     videoAssets = fallbackVideoAssets;
     downloadHint.textContent = "Video-Assets konnten nicht geladen werden.";
   }
+
+  state.selectedVideo = videoAssets[0] || null;
+
+  buildContentCards();
+  buildAssetCards(videoAssetList, videoAssets, state.selectedVideo?.id, selectVideo);
 
   state.selectedVideo = videoAssets[0] || null;
 
