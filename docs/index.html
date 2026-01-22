@@ -66,10 +66,17 @@
       <section class="panel span-2">
         <h2>Video Download</h2>
         <div class="video-preview">
-          <canvas id="previewCanvas" width="540" height="960"></canvas>
+          <video
+            id="previewVideo"
+            class="video-player"
+            controls
+            muted
+            playsinline
+            preload="metadata"
+          ></video>
           <div class="video-actions">
             <button id="downloadVideo" class="primary">Video herunterladen</button>
-            <p id="downloadHint" class="helper">Video wird als Platzhalter-WebM generiert.</p>
+            <p id="downloadHint" class="helper">Video wird als MP4 aus den Assets geladen.</p>
           </div>
         </div>
       </section>
