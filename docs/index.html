@@ -12,53 +12,87 @@
         <p class="eyebrow">Zahnlose Nachtigall</p>
         <h1>Social Video Studio</h1>
         <p class="subtitle">
-          Stelle Video- & Audio-Assets sowie aktuelle Anlässe zusammen und generiere ein fertiges Social-Video-Paket.
+          Stelle Video- & Audio-Assets, Content-Typen und aktuelle Anlässe zusammen und generiere ein fertiges Social-Video-Paket.
         </p>
+        <p class="helper">Zielgruppe: Männer 50+ aus Österreich mit Fokus auf authentischen, suchoptimierten Content.</p>
       </div>
-      <button id="generateButton" class="primary">Paket generieren</button>
+      <div class="header-actions">
+        <button id="tabInput" class="tab-button active" type="button">1. Eingaben</button>
+        <button id="tabOutput" class="tab-button" type="button">2. Ausgabe</button>
+      </div>
     </header>
 
-    <main class="grid">
-      <section class="panel">
-        <h2>Video-Assets</h2>
-        <p class="helper">Wähle ein Template, das zu deinem Format passt.</p>
-        <div id="videoAssetList" class="card-grid"></div>
-      </section>
+    <main>
+      <section id="inputTab" class="tab-panel active">
+        <div class="grid">
+          <section class="panel">
+            <h2>Content-Typen</h2>
+            <p class="helper">
+              Wähle den Stil, der am besten zu deiner Zielgruppe passt. Jeder Typ enthält Hinweise zu Stimmung, Bildsprache
+              und Thumbnail-Ton.
+            </p>
+            <div id="contentTypeList" class="content-grid"></div>
+          </section>
 
-      <section class="panel">
-        <h2>Audio-Assets</h2>
-        <p class="helper">Soundloops für die Stimmung deines Clips.</p>
-        <div id="audioAssetList" class="card-grid"></div>
-      </section>
+          <section class="panel">
+            <h2>Video-Assets</h2>
+            <p class="helper">Wähle ein Template, das zu deinem Format passt.</p>
+            <div id="videoAssetList" class="card-grid"></div>
+          </section>
 
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Anlasskalender Österreich</h2>
-            <p class="helper">Aktuelle Ereignisse werden für die Text-Generierung priorisiert.</p>
-          </div>
-          <div class="date-control">
-            <label for="referenceDate">Datum</label>
-            <input type="date" id="referenceDate" />
-          </div>
+          <section class="panel">
+            <h2>Audio-Assets</h2>
+            <p class="helper">
+              Soundloops für die Stimmung deines Clips. Alle Loops sind frei kombinierbar und unabhängig vom Content-Typ.
+            </p>
+            <div id="audioAssetList" class="card-grid"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Anlasskalender Österreich</h2>
+                <p class="helper">Aktuelle Ereignisse werden für die Text-Generierung priorisiert.</p>
+              </div>
+              <div class="date-control">
+                <label for="referenceDate">Datum</label>
+                <input type="date" id="referenceDate" />
+              </div>
+            </div>
+            <div id="occasionList" class="list"></div>
+          </section>
+
+          <section class="panel span-2">
+            <h2>Bereit?</h2>
+            <p class="helper">
+              Prüfe deine Auswahl und erstelle anschließend das vollständige Paket inklusive Video-Vorschau und
+              Textbausteinen.
+            </p>
+            <button id="generateButton" class="primary">Outputs generieren</button>
+          </section>
         </div>
-        <div id="occasionList" class="list"></div>
       </section>
 
-      <section class="panel span-2">
-        <h2>Ausgabe</h2>
-        <p class="helper">Generierte Texte können direkt kopiert, bearbeitet oder neu erstellt werden.</p>
-        <div id="outputs" class="output-grid"></div>
-      </section>
+      <section id="outputTab" class="tab-panel">
+        <div class="grid">
+          <section class="panel span-2">
+            <h2>Video-Vorschau</h2>
+            <p class="helper">Hier siehst du das fertige Video mit Audio-Loop und Text-Overlay.</p>
+            <div class="video-preview">
+              <canvas id="previewCanvas" width="540" height="960"></canvas>
+              <div class="video-actions">
+                <button id="downloadVideo" class="primary">Video herunterladen</button>
+                <button id="regenerateVideo" class="secondary">Video neu generieren</button>
+                <p id="downloadHint" class="helper">Video wird als Platzhalter-WebM generiert.</p>
+              </div>
+            </div>
+          </section>
 
-      <section class="panel span-2">
-        <h2>Video Download</h2>
-        <div class="video-preview">
-          <canvas id="previewCanvas" width="540" height="960"></canvas>
-          <div class="video-actions">
-            <button id="downloadVideo" class="primary">Video herunterladen</button>
-            <p id="downloadHint" class="helper">Video wird als Platzhalter-WebM generiert.</p>
-          </div>
+          <section class="panel span-2">
+            <h2>Textelemente</h2>
+            <p class="helper">Generierte Texte können direkt kopiert, bearbeitet oder neu erstellt werden.</p>
+            <div id="outputs" class="output-grid"></div>
+          </section>
         </div>
       </section>
     </main>
