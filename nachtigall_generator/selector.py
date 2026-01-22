@@ -4,6 +4,9 @@ import random
 from pathlib import Path
 from typing import Optional
 
+from .types import ContentType
+
+
 class AssetNotFound(Exception):
     """Raised when required assets are missing."""
 
