@@ -303,11 +303,22 @@ h1 {
   flex-wrap: wrap;
 }
 
-.video-preview canvas {
+.video-preview .video-player {
+  width: 270px;
+  height: 480px;
   border-radius: 18px;
   border: 1px solid var(--border);
   background: #1b1b29;
   box-shadow: var(--shadow);
+}
+
+.empty-state {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 .video-actions {

@@ -1,10 +1,6 @@
-const videoAssets = [
-  { id: "type1", name: "Type 1 – Clean Highlight", duration: "15s" },
-  { id: "type2", name: "Type 2 – Urban Motion", duration: "20s" },
-  { id: "type3", name: "Type 3 – Soft Gradient", duration: "12s" },
-  { id: "type4", name: "Type 4 – Split Screen", duration: "18s" },
-  { id: "type5", name: "Type 5 – Event Focus", duration: "30s" },
-  { id: "type6", name: "Type 6 – Story Beats", duration: "25s" }
+let videoAssets = [];
+const fallbackVideoAssets = [
+  { id: "fallback-1", name: "Video-Template Platzhalter", duration: "Clip" }
 ];
 
 const contentTypes = [
@@ -99,7 +95,7 @@ const outputConfigs = [
 
 const state = {
   selectedContentType: contentTypes[0],
-  selectedVideo: videoAssets[0],
+  selectedVideo: null,
   selectedAudio: audioAssets[0],
   selectedOccasion: null,
   occasions: []
@@ -114,13 +110,24 @@ const generateButton = document.getElementById("generateButton");
 const referenceDate = document.getElementById("referenceDate");
 const downloadVideoButton = document.getElementById("downloadVideo");
 const downloadHint = document.getElementById("downloadHint");
-const previewCanvas = document.getElementById("previewCanvas");
+const previewVideo = document.getElementById("previewVideo");
+
+previewVideo.addEventListener("error", () => {
+  downloadHint.textContent = "Video-Datei konnte nicht geladen werden.";
+});
 
 const today = new Date();
 referenceDate.value = today.toISOString().split("T")[0];
 
-const buildAssetCards = (list, items, selectedKey, onSelect) => {
+const buildAssetCards = (list, items, selectedKey, onSelect, emptyMessage = "Keine Assets gefunden.") => {
   list.innerHTML = "";
+  if (items.length === 0) {
+    const emptyState = document.createElement("div");
+    emptyState.className = "empty-state";
+    emptyState.textContent = emptyMessage;
+    list.appendChild(emptyState);
+    return;
+  }
   items.forEach((item) => {
     const card = document.createElement("button");
     card.type = "button";
@@ -225,7 +232,7 @@ const renderOccasions = () => {
     item.querySelector("button").addEventListener("click", () => {
       state.selectedOccasion = occasion;
       renderOccasions();
-      drawPreview();
+      updateVideoPreview();
     });
     occasionList.appendChild(item);
   });
@@ -237,6 +244,8 @@ const generateTextPackage = () => {
   const occasion = state.selectedOccasion?.name || "dein nächster Anlass";
   const dateKey = state.selectedOccasion?.date || normalizeDateKey(referenceDate.value);
   const contentType = state.selectedContentType;
+  const videoName = state.selectedVideo?.name || "Unbekannt";
+  const audioName = state.selectedAudio?.name || "Unbekannt";
   const audienceLine = "Für Männer 50+ aus Österreich – direkt, ehrlich und mit Schmäh.";
   const seoKeywords = [occasion, ...contentType.seoKeywords, "Österreich", "Gstanzl"].join(", ");
 
@@ -253,8 +262,8 @@ const generateTextPackage = () => {
         `${occasion} mit Humor: Heurigen-Witz & Schmäh`
       ],
       description: [
-        `Ein geselliger Schmäh zu ${occasion}, mit Gstanzl, Witz und Heurigen-Flair. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
-        `Stammtisch-Vibe pur: ${occasion} als kurzer, knackiger Schmäh. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+        `Ein geselliger Schmäh zu ${occasion}, mit Gstanzl, Witz und Heurigen-Flair. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${videoName}\n🎧 Audio: ${audioName}\n🔎 Keywords: ${seoKeywords}`,
+        `Stammtisch-Vibe pur: ${occasion} als kurzer, knackiger Schmäh. ${audienceLine}\n\nTemplate: ${videoName}\nAudio: ${audioName}\nKeywords: ${seoKeywords}`
       ],
       instagram: [
         `${occasion} mit a bisserl Schmäh. 🍻\nWas war dein bester Witz dazu?\n\n#${slugifyTag(occasion)} #heuriger #gstanzl #österreich`,
@@ -278,8 +287,8 @@ const generateTextPackage = () => {
         `Heimat im Herzen: ${occasion} als stille Ballade`
       ],
       description: [
-        `Ein ruhiger, respektvoller Blick auf ${occasion}. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
-        `Melancholische Stimmung und ehrliche Worte zu ${occasion}. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+        `Ein ruhiger, respektvoller Blick auf ${occasion}. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${videoName}\n🎧 Audio: ${audioName}\n🔎 Keywords: ${seoKeywords}`,
+        `Melancholische Stimmung und ehrliche Worte zu ${occasion}. ${audienceLine}\n\nTemplate: ${videoName}\nAudio: ${audioName}\nKeywords: ${seoKeywords}`
       ],
       instagram: [
         `${occasion} in leisen Zeilen. 🌙\nWelche Erinnerung verbindest du damit?\n\n#${slugifyTag(occasion)} #heimat #österreich`,
@@ -303,8 +312,8 @@ const generateTextPackage = () => {
         `Schadenfreude? ${occasion} mit trockenem Schmäh`
       ],
       description: [
-        `Schwarzer Humor, trocken serviert: ${occasion} mit Wiener Schmäh. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
-        `Makaber und pointiert: ${occasion} als kurze Satire aus Österreich. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+        `Schwarzer Humor, trocken serviert: ${occasion} mit Wiener Schmäh. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${videoName}\n🎧 Audio: ${audioName}\n🔎 Keywords: ${seoKeywords}`,
+        `Makaber und pointiert: ${occasion} als kurze Satire aus Österreich. ${audienceLine}\n\nTemplate: ${videoName}\nAudio: ${audioName}\nKeywords: ${seoKeywords}`
       ],
       instagram: [
         `${occasion} mit schwarzem Humor. 😈\nVerstehst den Schmäh?\n\n#${slugifyTag(occasion)} #wienerschmäh #satire`,
@@ -328,8 +337,8 @@ const generateTextPackage = () => {
         `Beziehungsalltag & Schmäh: ${occasion}`
       ],
       description: [
-        `Genervt, aber mit Humor: ${occasion} aus Sicht vom geplagten Ehemann. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
-        `Ein solidarischer Blick auf den Beziehungsalltag: ${occasion} mit Augenzwinkern. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+        `Genervt, aber mit Humor: ${occasion} aus Sicht vom geplagten Ehemann. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${videoName}\n🎧 Audio: ${audioName}\n🔎 Keywords: ${seoKeywords}`,
+        `Ein solidarischer Blick auf den Beziehungsalltag: ${occasion} mit Augenzwinkern. ${audienceLine}\n\nTemplate: ${videoName}\nAudio: ${audioName}\nKeywords: ${seoKeywords}`
       ],
       instagram: [
         `${occasion} – und daheim is wieder Theater. 😅\nWer kennt's?\n\n#${slugifyTag(occasion)} #ehemann #beziehung`,
@@ -353,8 +362,8 @@ const generateTextPackage = () => {
         `${occasion} – kritisch, pointiert, österreichisch`
       ],
       description: [
-        `Sarkastisch, wissend und pointiert: ${occasion} mit gesellschaftlichem Unterton. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
-        `Ironie mit Schmäh: ${occasion} kritisch auf den Punkt gebracht. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+        `Sarkastisch, wissend und pointiert: ${occasion} mit gesellschaftlichem Unterton. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${videoName}\n🎧 Audio: ${audioName}\n🔎 Keywords: ${seoKeywords}`,
+        `Ironie mit Schmäh: ${occasion} kritisch auf den Punkt gebracht. ${audienceLine}\n\nTemplate: ${videoName}\nAudio: ${audioName}\nKeywords: ${seoKeywords}`
       ],
       instagram: [
         `${occasion} – glaubst du das? 🤨\nDeine Meinung zählt.\n\n#${slugifyTag(occasion)} #sarkasmus #kritik`,
@@ -378,8 +387,8 @@ const generateTextPackage = () => {
         `${occasion} in christlicher Tradition`
       ],
       description: [
-        `Warme, friedliche Worte zu ${occasion}. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${state.selectedVideo.name}\n🎧 Audio: ${state.selectedAudio.name}\n🔎 Keywords: ${seoKeywords}`,
-        `Tradition und Dankbarkeit: ${occasion} mit ruhigem Ton. ${audienceLine}\n\nTemplate: ${state.selectedVideo.name}\nAudio: ${state.selectedAudio.name}\nKeywords: ${seoKeywords}`
+        `Warme, friedliche Worte zu ${occasion}. ${audienceLine}\n\n📌 Anlass: ${dateKey}\n🎬 Template: ${videoName}\n🎧 Audio: ${audioName}\n🔎 Keywords: ${seoKeywords}`,
+        `Tradition und Dankbarkeit: ${occasion} mit ruhigem Ton. ${audienceLine}\n\nTemplate: ${videoName}\nAudio: ${audioName}\nKeywords: ${seoKeywords}`
       ],
       instagram: [
         `${occasion} mit Dankbarkeit und Frieden. ✨\nEin gesegnetes Fest!\n\n#${slugifyTag(occasion)} #tradition #kirche`,
@@ -456,122 +465,118 @@ const renderOutputs = (texts) => {
     regenButton.addEventListener("click", () => {
       const updatedTexts = generateTextPackage();
       textarea.value = updatedTexts[config.key];
-      drawPreview(updatedTexts);
+      updateVideoPreview();
     });
 
     outputs.appendChild(card);
   });
 };
 
-const drawPreview = (texts = null) => {
-  const ctx = previewCanvas.getContext("2d");
-  const gradient = ctx.createLinearGradient(0, 0, 540, 960);
-  gradient.addColorStop(0, "#3b5bff");
-  gradient.addColorStop(1, "#0f172a");
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+const assetBasePaths = ["assets/video_templates", "../assets/video_templates"];
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.16)";
-  ctx.fillRect(40, 60, 460, 140);
-
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 28px Inter, sans-serif";
-  ctx.fillText("Nachtigall Studio", 60, 110);
-
-  ctx.font = "18px Inter, sans-serif";
-  ctx.fillText(`Template: ${state.selectedVideo.name}`, 60, 150);
-  ctx.fillText(`Audio: ${state.selectedAudio.name}`, 60, 175);
-  ctx.fillText(`Content-Typ: ${state.selectedContentType.name}`, 60, 200);
-
-  const overlayText = texts?.overlay || generateTextPackage().overlay;
-  wrapText(ctx, overlayText, 60, 280, 420, 28);
-
-  if (state.selectedOccasion) {
-    ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
-    ctx.fillRect(40, 760, 460, 140);
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 22px Inter, sans-serif";
-    ctx.fillText(state.selectedOccasion.name, 60, 810);
-    ctx.font = "16px Inter, sans-serif";
-    ctx.fillText(`Anlass: ${state.selectedOccasion.date}`, 60, 840);
-  }
+const buildAssetUrl = (basePath, fileName) => {
+  const encodedFile = encodeURIComponent(fileName);
+  return `${basePath}/${encodedFile}`;
 };
 
-const wrapText = (ctx, text, x, y, maxWidth, lineHeight) => {
-  const words = text.split(" ");
-  let line = "";
-  words.forEach((word, index) => {
-    const testLine = `${line}${word} `;
-    const metrics = ctx.measureText(testLine);
-    if (metrics.width > maxWidth && index > 0) {
-      ctx.fillText(line, x, y);
-      line = `${word} `;
-      y += lineHeight;
-    } else {
-      line = testLine;
+const resolveVideoUrl = async (fileName) => {
+  for (const basePath of assetBasePaths) {
+    const candidate = buildAssetUrl(basePath, fileName);
+    try {
+      const response = await fetch(candidate, { method: "HEAD" });
+      if (response.ok) {
+        return candidate;
+      }
+    } catch (error) {
+      // Ignore and try next candidate.
     }
-  });
-  ctx.fillText(line, x, y);
+  }
+  return buildAssetUrl(assetBasePaths[0], fileName);
+};
+
+const updateVideoPreview = async () => {
+  if (!state.selectedVideo) {
+    previewVideo.removeAttribute("src");
+    previewVideo.load();
+    downloadHint.textContent = "Kein Video ausgewählt.";
+    downloadVideoButton.disabled = true;
+    return;
+  }
+
+  const fileName = state.selectedVideo.file || state.selectedVideo.name;
+  const videoUrl = await resolveVideoUrl(fileName);
+  previewVideo.src = videoUrl;
+  previewVideo.load();
+  downloadHint.textContent = `Ausgewählt: ${state.selectedVideo.name}`;
+  downloadVideoButton.disabled = false;
 };
 
 const handleGenerate = () => {
   const texts = generateTextPackage();
   renderOutputs(texts);
-  drawPreview(texts);
+  updateVideoPreview();
 };
 
-const setupDownload = () => {
-  if (!window.MediaRecorder) {
-    downloadHint.textContent = "MediaRecorder wird in diesem Browser nicht unterstützt.";
-    downloadVideoButton.disabled = true;
+const resetDownloadState = (message) => {
+  downloadVideoButton.disabled = false;
+  downloadVideoButton.textContent = "Video herunterladen";
+  if (message) {
+    downloadHint.textContent = message;
+  }
+};
+
+const buildDownloadName = (video) => {
+  const rawName = video?.file || video?.name || "video";
+  const withoutExtension = rawName.replace(/\.[^/.]+$/, "");
+  const safe = withoutExtension
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-+|-+$/g, "");
+  return `nachtigall-${safe || "video"}.mp4`;
+};
+
+const downloadSelectedVideo = async () => {
+  if (!state.selectedVideo) {
+    resetDownloadState("Kein Video ausgewählt.");
     return;
   }
 
-  downloadVideoButton.addEventListener("click", async () => {
-    downloadVideoButton.disabled = true;
-    downloadVideoButton.textContent = "Video wird erstellt…";
+  downloadVideoButton.disabled = true;
+  downloadVideoButton.textContent = "Video wird vorbereitet…";
 
-    const stream = previewCanvas.captureStream(30);
-    const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
-    const chunks = [];
+  try {
+    const fileName = state.selectedVideo.file || state.selectedVideo.name;
+    const videoUrl = await resolveVideoUrl(fileName);
+    const response = await fetch(videoUrl);
+    if (!response.ok) {
+      throw new Error("Video download failed");
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = buildDownloadName(state.selectedVideo);
+    link.click();
+    URL.revokeObjectURL(url);
+    resetDownloadState("Video wurde als MP4 heruntergeladen.");
+  } catch (error) {
+    resetDownloadState("Video konnte nicht geladen werden. Bitte erneut versuchen.");
+  }
+};
 
-    recorder.addEventListener("dataavailable", (event) => {
-      if (event.data.size > 0) {
-        chunks.push(event.data);
-      }
-    });
-
-    recorder.addEventListener("stop", () => {
-      const blob = new Blob(chunks, { type: "video/webm" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "nachtigall-video.webm";
-      link.click();
-      URL.revokeObjectURL(url);
-      downloadVideoButton.disabled = false;
-      downloadVideoButton.textContent = "Video herunterladen";
-    });
-
-    recorder.start();
-    drawPreview();
-
-    setTimeout(() => {
-      recorder.stop();
-    }, 3000);
-  });
+const setupDownload = () => {
+  downloadVideoButton.addEventListener("click", downloadSelectedVideo);
 };
 
 const selectVideo = (item) => {
   state.selectedVideo = item;
-  buildAssetCards(videoAssetList, videoAssets, item.id, selectVideo);
-  drawPreview();
+  buildAssetCards(videoAssetList, videoAssets, item.id, selectVideo, "Keine Video-Assets gefunden.");
+  updateVideoPreview();
 };
 
 const selectAudio = (item) => {
   state.selectedAudio = item;
-  buildAssetCards(audioAssetList, audioAssets, item.id, selectAudio);
-  drawPreview();
+  buildAssetCards(audioAssetList, audioAssets, item.id, selectAudio, "Keine Audio-Assets gefunden.");
 };
 
 const init = async () => {
@@ -580,10 +585,30 @@ const init = async () => {
   state.occasions = data.occasions;
   state.selectedOccasion = state.occasions[0];
 
-  buildContentCards();
-  buildAssetCards(videoAssetList, videoAssets, state.selectedVideo.id, selectVideo);
+  try {
+    const videoResponse = await fetch("data/video_assets.json");
+    if (!videoResponse.ok) {
+      throw new Error("Video assets missing");
+    }
+    const videoData = await videoResponse.json();
+    videoAssets = Array.isArray(videoData.videoAssets) ? videoData.videoAssets : fallbackVideoAssets;
+  } catch (error) {
+    videoAssets = fallbackVideoAssets;
+    downloadHint.textContent = "Video-Assets konnten nicht geladen werden.";
+  }
 
-  buildAssetCards(audioAssetList, audioAssets, state.selectedAudio.id, selectAudio);
+  state.selectedVideo = videoAssets[0] || null;
+
+  buildContentCards();
+  buildAssetCards(
+    videoAssetList,
+    videoAssets,
+    state.selectedVideo?.id,
+    selectVideo,
+    "Keine Video-Assets gefunden."
+  );
+
+  buildAssetCards(audioAssetList, audioAssets, state.selectedAudio.id, selectAudio, "Keine Audio-Assets gefunden.");
 
   renderOccasions();
   handleGenerate();
