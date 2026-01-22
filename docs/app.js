@@ -78,11 +78,13 @@ const contentTypes = [
 
 const audioAssets = [
   { id: "loop1", name: "Schnaderhuepfl", mood: "gesellig" },
+  { id: "loop1b", name: "Schnaderhuepfl (Type 5)", mood: "gesellig" },
   { id: "loop2", name: "STritschiwutscherl", mood: "klassisch" },
   { id: "loop3", name: "Trink ma no a Flascherl hook", mood: "heuriger vibe" },
   { id: "loop4", name: "Andauer Weinlied (fröhlich)", mood: "gemütlich" },
   { id: "loop5", name: "Und da Ochs hot glocht", mood: "volksnah" },
-  { id: "loop6", name: "Heit is mei Oidi gstorm", mood: "ballade" }
+  { id: "loop6", name: "Heit is mei Oidi gstorm", mood: "ballade" },
+  { id: "loop6b", name: "Heit is mei Oidi gstorm (Type 6)", mood: "ballade" }
 ];
 
 const outputConfigs = [
@@ -172,18 +174,10 @@ const buildContentCards = () => {
     card.addEventListener("click", () => {
       state.selectedContentType = type;
       buildContentCards();
-      drawPreview();
+      handleGenerate();
     });
     contentTypeList.appendChild(card);
   });
-};
-
-const setActiveTab = (tab) => {
-  const isInput = tab === "input";
-  inputTab.classList.toggle("active", isInput);
-  outputTab.classList.toggle("active", !isInput);
-  tabInput.classList.toggle("active", isInput);
-  tabOutput.classList.toggle("active", !isInput);
 };
 
 const normalizeDateKey = (date) => {
@@ -595,6 +589,11 @@ const selectAudio = (item) => {
 };
 
 const init = async () => {
+  const response = await fetch("data/occasions_at.json");
+  const data = await response.json();
+  state.occasions = data.occasions;
+  state.selectedOccasion = state.occasions[0];
+
   buildContentCards();
   buildAssetCards(videoAssetList, videoAssets, state.selectedVideo.id, selectVideo);
 
