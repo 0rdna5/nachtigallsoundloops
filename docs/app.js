@@ -180,14 +180,6 @@ const buildContentCards = () => {
   });
 };
 
-const setActiveTab = (tab) => {
-  const isInput = tab === "input";
-  inputTab.classList.toggle("active", isInput);
-  outputTab.classList.toggle("active", !isInput);
-  tabInput.classList.toggle("active", isInput);
-  tabOutput.classList.toggle("active", !isInput);
-};
-
 const normalizeDateKey = (date) => {
   const [year, month, day] = date.split("-");
   return `${month}-${day}`;
